@@ -1,3 +1,6 @@
+require('dotenv').config()
+
+
 const express = require('express');
 const { Sequelize, DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
@@ -15,7 +18,7 @@ app.use(morgan('dev')); // Request logging
 app.use(express.json()); // JSON parsing
 
 // MySQL connection
-const sequelize = new Sequelize('restaurants_db', 'your_user', 'your_password', {
+const sequelize = new Sequelize('restaurants_db', 'root', '1234', {
     host: 'localhost',
     dialect: 'mysql',
     logging: false // Disable SQL logs (optional)
@@ -181,6 +184,12 @@ app.post('/payments/webhook', async (req, res) => {
         res.status(500).json({ error: 'Error processing webhook' });
     }
 });
+
+// Route: Health check
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', message: 'Servidor rodando e banco conectado' });
+});
+
 
 // Start server
 app.listen(port, () => {
