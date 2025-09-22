@@ -15,10 +15,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // MySQL connection (RDS)
-const sequelize = new Sequelize('restaurants', 'root', '12503908', {
-    host: 'restaurants.cg7464oskli9.us-east-1.rds.amazonaws.com', // Endpoint do RDS
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+    host: process.env.DB_HOST,
     dialect: 'mysql',
-    logging: false // Disable SQL logs (opcional)
+    logging: false
 });
 
 // Test connection

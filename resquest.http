@@ -1,0 +1,21 @@
+@base = http://meu-ambiente-express.eba-uzwuzp32.us-east-1.elasticbeanstalk.com
+
+
+POST {{base}}/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Produto Exemplo",
+    "sku_code": "SKU-001",
+    "sector": "Alimentos",
+    "price": 29.99,
+    "promotional_price": 24.99,
+    "quantity": 50,
+    "brand": "Marca XYZ",
+    "supplier_id": 5,
+    "status": true,
+    "barcode": "123456789012",
+    "cost": 15.5,
+    "unit_of_measure": "unidades",
+    "created_at": "2025-09-22 10:30:00"
+}
