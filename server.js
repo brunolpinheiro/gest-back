@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const { Sequelize, DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -54,9 +54,73 @@ const Restaurant = sequelize.define('Restaurant', {
     timestamps: false
 });
 
-// Sync model with database
+// Product model
+const Product = sequelize.define('Product', {
+    uid: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    name: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    sku_code: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    sector: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    price: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+    },
+    promotional_price: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    brand: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    supplier_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+    },
+    barcode: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    cost: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    unit_of_measure: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    created_at: {
+        type: DataTypes.STRING(19),
+        allowNull: false
+    }
+}, {
+    tableName: 'products',
+    timestamps: false
+});
+
+// Sync models with database
 sequelize.sync({ force: false }).then(() => {
-    console.log('Restaurants table synchronized');
+    console.log('Tables synchronized');
 });
 
 // Authentication middleware
@@ -127,6 +191,49 @@ app.get('/restaurants', authenticateMiddleware, async (req, res) => {
         res.json(restaurants);
     } catch (err) {
         res.status(500).json({ error: 'Error listing restaurants' });
+    }
+});
+
+// Route: Register product
+app.post('/products', authenticateMiddleware, async (req, res) => {
+    const { name, sku_code, sector, price, promotional_price, quantity, brand, supplier_id, status, barcode, cost, unit_of_measure } = req.body;
+
+    if (!name || !sku_code || !sector || !price || !quantity || !brand || status === undefined) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        const created_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const product = await Product.create({
+            name,
+            sku_code,
+            sector,
+            price,
+            promotional_price,
+            quantity,
+            brand,
+            supplier_id,
+            status,
+            barcode,
+            cost,
+            unit_of_measure,
+            created_at
+        });
+        res.status(201).json({ message: 'Product registered successfully', product });
+    } catch (err) {
+        res.status(500).json({ error: 'Error registering product' });
+    }
+});
+
+// Route: List products
+app.get('/products', authenticateMiddleware, async (req, res) => {
+    try {
+        const products = await Product.findAll({
+            attributes: ['uid', 'name', 'sku_code', 'sector', 'price', 'promotional_price', 'quantity', 'brand', 'supplier_id', 'status', 'barcode', 'cost', 'unit_of_measure', 'created_at']
+        });
+        res.json(products);
+    } catch (err) {
+        res.status(500).json({ error: 'Error listing products' });
     }
 });
 
